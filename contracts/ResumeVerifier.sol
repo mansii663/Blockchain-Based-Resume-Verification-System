@@ -34,4 +34,33 @@ contract ResumeVerifier {
         }));
         emit ResumeUploaded(msg.sender, _ipfsCid, block.timestamp);
     }
+
+    function verifyResume(address _candidate, uint _resumeIndex) external onlyAdmin {
+        require(_resumeIndex < userResumes[_candidate].length, "INVALID RESUME INDEX");
+        userResumes[_candidate][_resumeIndex].isVerified = true;
+        emit ResumeVerified(_candidate, _resumeIndex, msg.sender, block.timestamp);
+    }
+
+    function getResume(address _candidate, uint _resumeIndex) external view
+    returns (
+        string memory name,
+        string memory ipfsCid,
+        uint uploadedAt,
+        bool isVerified
+    ) {
+        require(_resumeIndex < userResumes[_candidate].length, "INVALID RESUME INDEX");
+        Resume storage r = userResumes[_candidate][_resumeIndex];
+        return (r.name, r.ipfsCid, r.uploadedAt, r.isVerified);
+    }
+
+    function getAllResumes(address _candidate) external view
+    returns (Resume[] memory) {
+        return userResumes[_candidate];
+    }
+
+    function transferAdmin(address _newAdmin) external onlyAdmin{
+        require(_newAdmin != address(0), "NEW ADMIN IS ZERO ADDRESS");
+        emit AdminTransferred(admin, _newAdmin);
+        admin = _newAdmin;
+    }
 }
