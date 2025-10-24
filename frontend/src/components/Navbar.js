@@ -1,5 +1,6 @@
 import React from "react";
 import { Moon, Sun } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Navbar({ darkMode, toggleDarkMode }) {
   return (
@@ -8,11 +9,14 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
         BlockVerify
       </h1>
       <div className="flex items-center gap-4">
-        <a href="#" className="hover:text-purple-500 transition">Home</a>
-        <a href="#" className="hover:text-purple-500 transition">Upload</a>
-        <a href="#" className="hover:text-purple-500 transition">Verify</a>
-        <a href="#" className="hover:text-purple-500 transition">Docs</a>
-        <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+        <Link to="/" className="hover:text-purple-500 transition">Home</Link>
+        <Link to="/login" className="hover:text-purple-500 transition">Log In</Link>
+        <Link to="/signup" className="hover:text-purple-500 transition">Sign Up</Link>
+        <Link to="/docs" className="hover:text-purple-500 transition">Docs</Link>
+        <button
+          onClick={toggleDarkMode}
+          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+        >
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </div>
