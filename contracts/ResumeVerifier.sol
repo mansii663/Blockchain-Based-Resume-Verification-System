@@ -15,6 +15,7 @@ contract ResumeVerifier {
     event ResumeUploaded(address indexed owner, string ipfsCid, uint timestamp);
     event ResumeVerified(address indexed owner, uint resumeIndex, address indexed verifier, uint timestamp);
     event AdminTransferred(address indexed previousAdmin, address indexed newAdmin);
+    event ResumeRejected(address indexed owner, uint resumeIndex, address indexed verifier, uint timestamp);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "ONLY ADMIN CAN CALL THIS");
@@ -35,10 +36,20 @@ contract ResumeVerifier {
         emit ResumeUploaded(msg.sender, _ipfsCid, block.timestamp);
     }
 
-    function verifyResume(address _candidate, uint _resumeIndex) external onlyAdmin {
+    function verifyResume(address _candidate, uint _resumeIndex, bool _shouldVerify) external onlyAdmin {
         require(_resumeIndex < userResumes[_candidate].length, "INVALID RESUME INDEX");
-        userResumes[_candidate][_resumeIndex].isVerified = true;
-        emit ResumeVerified(_candidate, _resumeIndex, msg.sender, block.timestamp);
+        
+        Resume storage resume = userResumes[_candidate][_resumeIndex];
+        require(bytes(resume.name).length > 0, "Missing name");
+        
+        if (_shouldVerify) {
+            require(resume.isVerified == false, "RESUME ALREADY VERIFIED");
+            resume.isVerified = true;
+            emit ResumeVerified(_candidate, _resumeIndex, msg.sender, block.timestamp);
+        } else {
+            resume.isVerified = false;
+            emit ResumeRejected(_candidate, _resumeIndex, msg.sender, block.timestamp);
+        }
     }
 
     function getResume(address _candidate, uint _resumeIndex) external view
